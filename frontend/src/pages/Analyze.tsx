@@ -33,6 +33,10 @@ export function Analyze({
   });
   // Confluence is timeframe-independent (it reads weekly AND daily itself).
   const signal = useQuery({ queryKey: ["signal", symbol], queryFn: () => api.signal(symbol) });
+  const patterns = useQuery({
+    queryKey: ["patterns", symbol, interval],
+    queryFn: () => api.patterns(symbol, interval),
+  });
 
   return (
     <div>
@@ -69,6 +73,26 @@ export function Analyze({
         </section>
 
         <section>
+          {patterns.data && (
+            <div className="card" style={{ marginBottom: 12 }}>
+              <h3 style={{ marginTop: 0 }}>Patterns &amp; key levels</h3>
+              <p>{patterns.data.summary}</p>
+              {patterns.data.patterns.map((p) => (
+                <p key={p.name}>
+                  <strong className={`tf-${p.direction === "bullish" ? "up" : p.direction === "bearish" ? "down" : "flat"}`}>
+                    {p.name}
+                  </strong>{" "}
+                  — {p.description}
+                </p>
+              ))}
+              {patterns.data.caveat && (
+                <p className="muted" style={{ fontStyle: "italic" }}>
+                  ⚠ {patterns.data.caveat}
+                </p>
+              )}
+            </div>
+          )}
+
           <h3 style={{ marginTop: 0 }}>What am I looking at?</h3>
           {indicators.isLoading && <p className="muted">Reading the indicators…</p>}
           {indicators.isError && <p className="err">Failed to load analysis.</p>}

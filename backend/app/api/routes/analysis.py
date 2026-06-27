@@ -7,6 +7,8 @@ from fastapi import APIRouter, HTTPException, Query
 
 from app.data.registry import get_provider
 from app.intelligence.indicators.base import Explanation
+from app.intelligence.patterns import detect_frame
+from app.intelligence.patterns.detect import PatternReport
 from app.intelligence.registry import available, get_indicator
 
 router = APIRouter(prefix="/analysis", tags=["analysis"])
@@ -71,3 +73,14 @@ def overlays(
                 for t, v in zip(times, vals)
             ]
     return {"symbol": symbol, "interval": interval, "series": series}
+
+
+@router.get("/patterns", response_model=PatternReport)
+def patterns(
+    symbol: str = Query(..., examples=["RELIANCE.NS"]),
+    interval: str = Query("1d"),
+    lookback: int = Query(120, ge=30, le=2000),
+) -> PatternReport:
+    """Detect candlestick patterns + nearest support/resistance, with teaching text."""
+    df = _load_frame(symbol, interval, lookback)
+    return detect_frame(symbol, interval, df)

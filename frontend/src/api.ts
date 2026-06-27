@@ -146,6 +146,54 @@ export interface PaperTrade {
   traded_at: string;
 }
 
+export interface WatchSignal {
+  symbol: string;
+  badge: string | null;
+  action: Signal["action"] | null;
+  stance: Stance | null;
+  score: number | null;
+}
+
+export interface Pattern {
+  name: string;
+  direction: Stance;
+  description: string;
+}
+export interface PatternReport {
+  symbol: string;
+  interval: string;
+  price: number;
+  support: number | null;
+  resistance: number | null;
+  patterns: Pattern[];
+  summary: string;
+  caveat: string | null;
+}
+
+export interface Alert {
+  id: number;
+  symbol: string;
+  kind: string;
+  threshold: number | null;
+  target: string;
+  note: string;
+  active: boolean;
+  currently_met: boolean;
+  last_triggered_at: string | null;
+  description: string;
+}
+export interface AlertEval extends Alert {
+  met: boolean;
+  newly_fired: boolean;
+}
+export interface NewAlert {
+  symbol: string;
+  kind: string;
+  threshold?: number | null;
+  target?: string;
+  note?: string;
+}
+
 async function req<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${BASE}${path}`, {
     headers: { "Content-Type": "application/json" },
@@ -199,6 +247,20 @@ export const api = {
   screenerPresets: () => req<ScreenerPreset[]>("/api/screener/presets"),
   screener: (preset: string, minScore = 0) =>
     req<ScreenerRow[]>(`/api/screener?preset=${preset}&min_score=${minScore}`),
+  watchlistSignals: () => req<WatchSignal[]>("/api/watchlist/signals"),
+  patterns: (symbol: string, interval = "1d") =>
+    req<PatternReport>(
+      `/api/analysis/patterns?symbol=${encodeURIComponent(symbol)}&interval=${interval}`,
+    ),
+
+  // Alerts
+  alerts: () => req<Alert[]>("/api/alerts"),
+  alertKinds: () => req<string[]>("/api/alerts/kinds"),
+  alertCreate: (a: NewAlert) =>
+    req<Alert>("/api/alerts", { method: "POST", body: JSON.stringify(a) }),
+  alertToggle: (id: number) => req<Alert>(`/api/alerts/${id}/toggle`, { method: "POST" }),
+  alertDelete: (id: number) => req(`/api/alerts/${id}`, { method: "DELETE" }),
+  alertEvaluate: () => req<AlertEval[]>("/api/alerts/evaluate", { method: "POST" }),
 
   // Paper trading
   paper: () => req<PaperSummary>("/api/paper"),

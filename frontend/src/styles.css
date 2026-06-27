@@ -141,6 +141,31 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.wl-tag {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 1px 6px;
+  border-radius: 5px;
+  width: fit-content;
+  margin-top: 2px;
+}
+.tag-buy {
+  background: #1f4d45;
+  color: #4ee0c0;
+}
+.tag-watch {
+  background: #4d4423;
+  color: #f5cf6a;
+}
+.tag-hold {
+  background: #2a3142;
+  color: #b0bacb;
+}
+.tag-avoid {
+  background: #4d2330;
+  color: #ff8a8a;
+}
 .wl-px {
   display: flex;
   flex-direction: column;

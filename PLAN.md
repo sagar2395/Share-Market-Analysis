@@ -240,8 +240,9 @@ Combines the above into an actionable, *explainable* call. **Never a black box**
 - **Paper-trading sandbox** *(owner-approved 2026-06-27, pulled forward from Phase 5)* —
   simulated cash account: place buy/sell at live price, track positions, realised +
   unrealised P&L and equity, reset anytime. Practise the engine's calls risk-free.
-- Alerts (price/indicator thresholds) with desktop/browser notifications. *(Phase 2 polish)*
-- Pattern recognition (candles + S/R). *(Phase 2 polish)*
+- Alerts (price/RSI/confluence thresholds) with browser notifications. ✅ *done*
+- Pattern recognition (candlesticks + support/resistance), shown on Analyze. ✅ *done*
+- Watchlist inline confluence tags (triage the list at a glance). ✅ *done*
 
 ### Phase 3 — Fundamentals & the correlation engine
 - Fundamental data + per-stock scorecard + peer comparison.

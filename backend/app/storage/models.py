@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from sqlalchemy import DateTime, Float, Integer, String, UniqueConstraint
+from sqlalchemy import Boolean, DateTime, Float, Integer, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.storage.db import Base
@@ -18,6 +18,27 @@ class WatchlistItem(Base):
     symbol: Mapped[str] = mapped_column(String(32), index=True)
     name: Mapped[str] = mapped_column(String(128), default="")
     added_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
+class Alert(Base):
+    """A user-defined condition watched against current data.
+
+    kind ∈ {price_above, price_below, rsi_above, rsi_below, confluence_action}.
+    For confluence_action, ``target`` holds the action string (e.g. "buy").
+    """
+
+    __tablename__ = "alerts"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    symbol: Mapped[str] = mapped_column(String(32), index=True)
+    kind: Mapped[str] = mapped_column(String(32))
+    threshold: Mapped[float | None] = mapped_column(Float, nullable=True)
+    target: Mapped[str] = mapped_column(String(32), default="")  # for non-numeric conditions
+    note: Mapped[str] = mapped_column(String(256), default="")
+    active: Mapped[bool] = mapped_column(Boolean, default=True)
+    currently_met: Mapped[bool] = mapped_column(Boolean, default=False)
+    last_triggered_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
 
 class PaperAccount(Base):

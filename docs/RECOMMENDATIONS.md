@@ -112,4 +112,27 @@ Highest-value next steps (all within the frozen phase order):
 
 _Owner: tick the ones you want and I'll fold them into the appropriate phase._
 
+---
+
+## 2026-06-27 — after Phase 2 complete (alerts, patterns, watchlist tags)
+
+Phase 2 is fully done (signals/confluence, screener, paper trading, alerts, pattern
+recognition, inline watchlist tags). Highest-value next steps:
+
+1. 🆕 **Background alert evaluation** (Phase 2.5)
+   Alerts currently only check while the Alerts tab is open. Move evaluation into the
+   APScheduler loop (and/or a lightweight always-on poll) so you're notified even when the
+   tab is closed — pairs naturally with a future email/Telegram push. *Effort: S–M.*
+
+2. 🆕 **Fold patterns + S/R into the confluence score & suggested stop** (Phase 3)
+   Use nearest support as the suggested stop and let a bullish-pattern-at-support nudge the
+   score up — makes the badge a complete, risk-defined plan. *Effort: M.*
+
+3. 🆕 **"Paper-buy this setup" button** (carried over, still recommended) — one click from
+   the badge/screener to a risk-sized paper order. *Effort: S.*
+
+4. 🆕 **Volume-confirmation flag on patterns** (Phase 3)
+   Mark whether a pattern formed on above-average volume — the single biggest filter for
+   pattern reliability. *Effort: S.*
+
 _Owner: tick the ones you want and I'll fold them into the appropriate phase._

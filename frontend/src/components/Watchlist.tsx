@@ -18,6 +18,9 @@ export function Watchlist({
     queryFn: api.watchlistQuotes,
     refetchInterval: 60_000,
   });
+  // Inline confluence tags (badge/score) per symbol — triage the whole list at a glance.
+  const signals = useQuery({ queryKey: ["watchlist-signals"], queryFn: api.watchlistSignals });
+  const sigBy = new Map((signals.data ?? []).map((s) => [s.symbol, s]));
 
   const add = useMutation({
     mutationFn: (s: string) => api.watchlistAdd(s),
@@ -53,6 +56,7 @@ export function Watchlist({
       <ul className="wl-list">
         {(quotes.data ?? []).map((q) => {
           const up = (q.change_percent ?? 0) >= 0;
+          const sig = sigBy.get(q.symbol);
           return (
             <li
               key={q.symbol}
@@ -61,7 +65,13 @@ export function Watchlist({
             >
               <div className="wl-sym">
                 <strong>{q.symbol.replace(".NS", "")}</strong>
-                <span className="muted wl-name">{q.name}</span>
+                {sig?.action ? (
+                  <span className={`wl-tag tag-${sig.action}`} title={sig.badge ?? ""}>
+                    {sig.action} · {sig.score}
+                  </span>
+                ) : (
+                  <span className="muted wl-name">{q.name}</span>
+                )}
               </div>
               <div className="wl-px">
                 <span>{q.price != null ? `₹${q.price.toLocaleString("en-IN")}` : "—"}</span>

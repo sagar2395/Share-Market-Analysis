@@ -14,13 +14,15 @@ decision it helps you make. If you're ever stuck in the app, start here.
   plain-language indicator explanations.
 - [Weekly + Daily Confluence](confluence-signal.md) — the signal badge: what it means
   and how to act on it.
+- [Patterns & Key Levels](patterns.md) — candlestick patterns + support/resistance.
 - [Screener](screener.md) — scan the universe for the best swing setups, ranked.
-- [Watchlist](watchlist.md) — track symbols, see live quotes, jump to analysis.
+- [Watchlist](watchlist.md) — track symbols, live quotes, inline confluence tags.
 - [Portfolio](portfolio.md) — manual holdings with live P&L, targets/stops, horizon.
 - [Paper Trading](paper-trading.md) — practise with fake money, risk-free.
+- [Alerts](alerts.md) — get notified on price/RSI/confluence conditions.
 - [Dashboard](dashboard.md) — portfolio totals + watchlist movers at a glance.
 
 ## Coming later
-- Alerts · Pattern recognition · Symbol search (full universe) · Correlation & FII/DII
-  engine · Fundamentals · Recommendations · Backtesting · Trade journal · Broker sync
+- Symbol search (full universe) · Correlation & FII/DII engine · Fundamentals ·
+  Recommendations · Backtesting · Trade journal · Broker sync
   (see `PLAN.md` §7 for the full roadmap, order frozen)

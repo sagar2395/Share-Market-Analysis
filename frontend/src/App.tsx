@@ -7,9 +7,10 @@ import { Analyze } from "./pages/Analyze";
 import { Portfolio } from "./pages/Portfolio";
 import { Screener } from "./pages/Screener";
 import { Paper } from "./pages/Paper";
+import { Alerts } from "./pages/Alerts";
 
-type Tab = "dashboard" | "analyze" | "screener" | "portfolio" | "paper";
-const TABS: Tab[] = ["dashboard", "analyze", "screener", "portfolio", "paper"];
+type Tab = "dashboard" | "analyze" | "screener" | "portfolio" | "paper" | "alerts";
+const TABS: Tab[] = ["dashboard", "analyze", "screener", "portfolio", "paper", "alerts"];
 
 export default function App() {
   const [tab, setTab] = useState<Tab>("dashboard");
@@ -56,6 +57,7 @@ export default function App() {
           {tab === "screener" && <Screener onSelect={select} />}
           {tab === "portfolio" && <Portfolio onSelect={select} />}
           {tab === "paper" && <Paper onSelect={select} />}
+          {tab === "alerts" && <Alerts onSelect={select} />}
         </main>
       </div>
 

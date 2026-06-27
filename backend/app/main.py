@@ -10,6 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app import __version__
 from app.api.routes import (
     admin,
+    alerts,
     analysis,
     health,
     market,
@@ -57,7 +58,9 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    for module in (health, market, analysis, signals, watchlist, portfolio, paper, admin):
+    for module in (
+        health, market, analysis, signals, watchlist, portfolio, paper, alerts, admin
+    ):
         app.include_router(module.router, prefix="/api")
 
     @app.get("/")

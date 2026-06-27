@@ -4,20 +4,22 @@
 > session; update it at the end of every working run. See `CLAUDE.md` §2–3.
 
 **Last updated:** 2026-06-27
-**Current phase:** Phase 2 (Screener & signals) — **core delivered** (signals, confluence,
-screener, paper trading); remaining: alerts + pattern recognition.
+**Current phase:** Phase 2 (Screener & signals) — **COMPLETE** (signals, confluence,
+screener, paper trading, alerts, pattern recognition, watchlist tags). Ready for Phase 3.
 
 ---
 
 ## Snapshot
 Trading horizon is **swing/positional (2 weeks–6 months), no intraday** — analysis runs
-on **daily + weekly** timeframes. The app has: a persistent **watchlist**, a manual
-**portfolio with live P&L**, a **dashboard**, an **Analyze** screen (candles + volume +
-EMA/Bollinger overlays + "what am I looking at?" teaching + daily/weekly toggle +
-**weekly/daily confluence badge**), a **Screener** (preset scans ranked by setup score),
-a **Paper-trading** sandbox (buy/sell at live price, positions, realised/unrealised P&L,
-reset), **EOD ingestion** into DuckDB, four indicators with `explain()`, and a
-**confluence signal engine**. Backend has 18 passing tests; frontend builds clean.
+on **daily + weekly** timeframes. The app has: a persistent **watchlist** (with **inline
+confluence tags**), a manual **portfolio with live P&L**, a **dashboard**, an **Analyze**
+screen (candles + volume + EMA/Bollinger overlays + "what am I looking at?" teaching +
+daily/weekly toggle + **confluence badge** + **candlestick patterns & support/resistance**),
+a **Screener** (preset scans ranked by setup score), a **Paper-trading** sandbox, an
+**Alerts** system (price/RSI/confluence conditions, edge-triggered, browser
+notifications), **EOD ingestion** into DuckDB, four indicators with `explain()`, a
+**confluence signal engine**, and **pattern detection**. Backend: 24 passing tests;
+frontend builds clean.
 
 ---
 
@@ -58,21 +60,31 @@ reset), **EOD ingestion** into DuckDB, four indicators with `explain()`, and a
 - [x] **Paper-trading sandbox** (`services/paper.py`, `/api/paper*`): simulated cash
       account, buy/sell at live price, avg-cost positions, realised + unrealised P&L,
       equity & return, trade log, reset; Paper UI page.
-- [x] Tests for signals/screener/paper (18 total, passing).
+- [x] **Alerts** (`services/alerts.py`, `/api/alerts*`): price/RSI/confluence-action
+      conditions, **edge-triggered** (fires on unmet→met), pause/resume/delete; Alerts UI
+      page polls `/evaluate` each minute and raises **browser notifications**.
+- [x] **Pattern recognition** (`intelligence/patterns/`): candlestick patterns (doji,
+      hammer, shooting star, bull/bear engulfing) + nearest **support/resistance** with
+      teaching text; `/api/analysis/patterns`; shown on Analyze.
+- [x] **Watchlist inline confluence tags** (`/api/watchlist/signals`): each sidebar row
+      shows its badge/score for at-a-glance triage.
+- [x] Tests for signals/screener/paper/alerts/patterns (24 total, passing).
 
 ## In progress 🚧
-- [ ] (none — Phase 2 core complete)
+- [ ] (none — Phase 2 COMPLETE)
 
-## Next up ▶️ (remaining Phase 2 → Phase 3)
-1. **Alerts** (price/indicator/confluence-change thresholds) with browser notifications.
-2. **Pattern recognition** (candles + support/resistance) feeding the signal reasons.
-3. **Watchlist signal tags:** show each watchlist row's confluence badge inline.
-4. **Phase 3 — Fundamentals & correlation engine** (FII/DII, sector rotation, macro
-   exposure). See `PLAN.md` §7 (order FROZEN).
+## Next up ▶️ (Phase 3 — Fundamentals & correlation engine)
+1. **Fundamental data + per-stock scorecard** (ratios, quality) + peer comparison;
+   add fundamental filters to the screener.
+2. **Correlation engine:** rolling correlation heatmap, sector-rotation map, macro-factor
+   exposure (USD/INR, crude, India VIX), **FII/DII flow** dashboard, delivery % analysis.
+3. **Options data:** PCR / OI / max-pain (Nifty & Bank Nifty).
+   See `PLAN.md` §7 (order FROZEN).
 
 ### Backlog (nice-to-have, not blocking)
 - Symbol-search autocomplete + fuller NSE universe (currently curated large-caps).
 - More indicators (ADX/Supertrend/ATR) on the teaching panel.
+- Auto stop/target on signals + "paper-buy this setup" button (see RECOMMENDATIONS).
 
 ## Decisions & gotchas 📌
 - **Horizon:** owner does NOT day-trade; "short-term" = 2wk–6mo. No intraday/minute data
