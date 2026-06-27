@@ -20,8 +20,9 @@ Interactive API docs: http://127.0.0.1:8000/docs
 | Var | Default | Meaning |
 |---|---|---|
 | `SMA_PROVIDER` | `yfinance` | Data provider: `yfinance` or `sample`. Falls back to `sample` on error. |
-| `SMA_DATA_DIR` | `./data` | Where local stores (DuckDB/SQLite/Parquet) live. |
+| `SMA_DATA_DIR` | `./data` | Where local stores (`app.sqlite`, `history.duckdb`) live. |
 | `SMA_CORS_ORIGINS` | `http://127.0.0.1:5173` | Allowed frontend origins (comma-separated). |
+| `SMA_ENABLE_SCHEDULER` | `true` | Run the daily EOD ingestion job on startup. Set `false` in tests. |
 
 > In a sandbox with no internet, set `SMA_PROVIDER=sample`. Locally, leave default
 > `yfinance` for real NSE/BSE data (`RELIANCE.NS`, `TCS.NS`, ...).

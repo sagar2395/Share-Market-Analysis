@@ -7,12 +7,13 @@ See `PLAN.md` §4 for the full design. This is the developer-facing summary of t
 ```
 Frontend (React/TS)  ──REST/WS──>  API (FastAPI)
                                       │
-                                      ├─ Service layer   (screener, portfolio, alerts, backtest)   [Phase 2+]
-                                      ├─ Intelligence    (indicators ✓, signals, correlation, decisions)
-                                      ├─ Data access     (provider abstraction ✓, ingestion, cache)
-                                      └─ Storage         (SQLite state, DuckDB+Parquet history)      [Phase 1]
+                                      ├─ Service layer   (watchlist ✓, portfolio ✓, ingestion ✓; screener/alerts/backtest [P2+])
+                                      ├─ Intelligence    (indicators ✓ — EMA/RSI/MACD/Bollinger; signals/correlation/decisions [P2+])
+                                      ├─ Data access     (provider abstraction ✓, registry+fallback ✓; cache [P2])
+                                      └─ Storage         (SQLite state ✓, DuckDB history ✓)
+                                                         + APScheduler EOD job ✓
 ```
-✓ = implemented in Phase 0.
+✓ = implemented (Phase 0–1).
 
 ## Backend module map (`backend/app/`)
 | Module | Responsibility |
@@ -25,10 +26,21 @@ Frontend (React/TS)  ──REST/WS──>  API (FastAPI)
 | `data/providers/yfinance_provider.py` | Live data via `yfinance`. |
 | `data/registry.py` | `get_provider()` — selects provider from config, falls back to sample. |
 | `intelligence/indicators/base.py` | `Indicator` ABC: `compute()` + `explain()` (teaching). |
-| `intelligence/indicators/*` | EMA, RSI, MACD (each self-registers). |
+| `intelligence/indicators/*` | EMA, RSI, MACD, Bollinger (each self-registers). |
 | `intelligence/registry.py` | Indicator registry (plugin discovery). |
-| `api/routes/*` | FastAPI routers: health, market, analysis. |
-| `main.py` | App factory, CORS, router wiring. |
+| `storage/db.py` · `storage/models.py` | SQLite/SQLAlchemy state: watchlist, holdings. |
+| `storage/history.py` | DuckDB OHLCV history (upsert/load/stats). |
+| `services/watchlist.py` · `services/portfolio.py` | Business logic for watchlist & P&L. |
+| `services/ingestion.py` | EOD pull of tracked symbols → DuckDB. |
+| `core/scheduler.py` | APScheduler daily ingestion job (18:30 IST). |
+| `api/routes/*` | Routers: health, market, analysis, watchlist, portfolio, admin. |
+| `main.py` | App factory, CORS, lifespan (DB init + scheduler), router wiring. |
+
+## Storage split
+- **`data/app.sqlite`** (SQLAlchemy) — small mutable state: watchlist, holdings.
+- **`data/history.duckdb`** — append-only OHLCV (daily + weekly), keyed
+  `(symbol, interval, time)`; fast for the correlation/backtesting phases.
+- Both live under `SMA_DATA_DIR` (gitignored).
 
 ## Key design principles
 - **Plugins over edits.** New indicator/signal/provider = new module that registers

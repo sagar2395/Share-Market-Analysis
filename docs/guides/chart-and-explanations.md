@@ -5,10 +5,19 @@ panel** (right). The explanation panel is the heart of the tool's *teaching* ide
 it reads the indicators for you and says what to do, using the stock's live numbers.
 
 ## The candlestick chart
-Each candle is one day:
-- **Green** candle = price closed **up** that day; **red** = closed **down**.
-- The thick body is open→close; the thin wicks are the day's high and low.
+Each candle is one **day** (or one **week** in the Weekly view):
+- **Green** candle = price closed **up** that period; **red** = closed **down**.
+- The thick body is open→close; the thin wicks are the high and low.
 - Drag to pan, scroll to zoom. The chart auto-fits when you switch symbols.
+
+**Overlays on the chart:**
+- **Orange / purple lines** = the 20- and 50-period EMAs (trend).
+- **Dashed blue lines** = Bollinger Bands (volatility envelope around a 20-period mean).
+- **Bars at the bottom** = volume (green on up days, red on down days).
+
+**Daily ↔ Weekly toggle** (top-right of the Analyze screen): Daily is for timing an
+entry; Weekly shows the bigger trend. As a swing/positional trader (2wk–6mo), check the
+**Weekly** trend first, then use **Daily** to time the entry.
 
 ## The explanation panel — how to read it
 For each indicator you'll see a coloured **stance** tag and four lines:

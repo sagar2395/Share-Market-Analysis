@@ -1,7 +1,13 @@
 # Share-Market-Analysis — Implementation Plan
 
 > Personal market analysis & decision-support tool for the Indian market (NSE/BSE).
-> Focus: short-term trading with a long-term sleeve. Built to be extensible.
+> Focus: **swing/positional trading on a ~2-week to ~6-month horizon** (no intraday),
+> with a long-term sleeve. Built to be extensible.
+>
+> **Trading horizon (authoritative):** the owner does **not** day-trade. "Short-term"
+> means holding **2 weeks–6 months**. Analysis works on **daily and weekly** timeframes;
+> there is no need for intraday/minute data or real-time tick streaming. Signals target
+> swing/positional setups, not scalps.
 >
 > **Status:** Plan for review. No code written yet.
 > **Disclaimer:** This is a personal decision-support tool, not financial advice. All signals/suggestions are probabilistic aids, not guarantees.
@@ -176,7 +182,7 @@ This is what makes the tool more than "info a normal user has." It hunts for **r
 ### 6b. Technical analysis
 - Full indicator suite (EMA/SMA, RSI, MACD, Bollinger, ATR, ADX, Supertrend, VWAP, Stochastic, Ichimoku, etc.).
 - **Candlestick & chart-pattern recognition** (engulfing, hammer, breakouts, flags, support/resistance, trendlines).
-- **Multi-timeframe confluence** (e.g., daily trend + 15-min entry) — core to short-term trading.
+- **Multi-timeframe confluence** (weekly trend + daily entry/timing) — core to swing/positional trading. No intraday timeframes.
 - Volume profile, pivot points, Fibonacci levels.
 
 ### 6c. Fundamental analysis
@@ -203,7 +209,7 @@ Combines the above into an actionable, *explainable* call. **Never a black box**
 
 - **Composite scoring:** weighted blend of technical, fundamental, flow, sentiment, and correlation signals → score per stock.
 - **Two profiles, your two styles:**
-  - *Short-term/quick-win:* momentum, breakout, volume/delivery surge, intraday-to-swing setups with tight risk.
+  - *Swing/positional (2wk–6mo):* momentum, breakout, pullback-in-trend, volume/delivery surge — multi-day to multi-week setups with defined risk.
   - *Long-term:* fundamental quality + value + trend.
 - **Output per idea:** action (Buy/Add/Hold/Trim/Exit/Avoid), conviction %, suggested **entry / stop-loss / targets**, position-size hint (risk-based), time horizon, and **"why" bullet list**.
 - **ML layer (Phase 4):** lightgbm/logistic models predicting probability of an N-day favorable move, trained on historical features — surfaced as one input, **always backtested** before trust.
@@ -242,7 +248,7 @@ Combines the above into an actionable, *explainable* call. **Never a black box**
 - News/sentiment ingestion + sentiment-vs-price correlation.
 
 ### Phase 5 — Polish, alerts, packaging
-- Real-time intraday streaming (WebSocket) for watchlist.
+- Live-ish EOD/delayed quote refresh (WebSocket) for the watchlist — no intraday tick streaming needed.
 - Trade journal & analytics (your win rate, what setups work *for you*).
 - **Broker integration** (Zerodha Kite/Upstox): auto portfolio sync, optional order placement.
 - **Tauri desktop packaging** for macOS (M5).

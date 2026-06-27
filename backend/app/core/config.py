@@ -26,6 +26,9 @@ class Settings(BaseSettings):
     # Local data directory for DuckDB/SQLite/Parquet stores (used from Phase 1).
     data_dir: Path = Path("./data")
 
+    # Run the daily EOD ingestion scheduler on startup (disabled in tests).
+    enable_scheduler: bool = True
+
     # Comma-separated list of allowed frontend origins for CORS.
     cors_origins: str = "http://127.0.0.1:5173,http://localhost:5173"
 

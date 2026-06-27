@@ -8,7 +8,9 @@ instructions so work stays consistent across sessions.
 
 ## 0. What this project is
 A **personal** market analysis & decision-support tool for the **Indian market
-(NSE/BSE)**. The owner is a short-term trader with a long-term sleeve. It must:
+(NSE/BSE)**. The owner is a **swing/positional trader (holding ~2 weeks to ~6 months,
+NOT intraday)** with a long-term sleeve. Analysis runs on **daily/weekly** timeframes;
+no intraday/minute data or tick streaming is needed. It must:
 find/screen stocks, analyse them (technical + fundamental), surface
 **correlations & money-flow** a normal user can't see, and give **explainable**
 buy/sell/hold suggestions — while **teaching** the owner what every chart and

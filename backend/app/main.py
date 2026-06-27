@@ -2,13 +2,31 @@
 
 from __future__ import annotations
 
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app import __version__
-from app.api.routes import analysis, health, market
+from app.api.routes import admin, analysis, health, market, portfolio, watchlist
 from app.core.config import get_settings
-from app.core.logging import setup_logging
+from app.core.logging import get_logger, setup_logging
+from app.core.scheduler import shutdown_scheduler, start_scheduler
+from app.storage.db import init_db
+
+log = get_logger(__name__)
+
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    init_db()
+    if get_settings().enable_scheduler:
+        try:
+            start_scheduler()
+        except Exception as exc:  # noqa: BLE001 — app should still serve if scheduler fails
+            log.warning("Scheduler not started: %s", exc)
+    yield
+    shutdown_scheduler()
 
 
 def create_app() -> FastAPI:
@@ -19,6 +37,7 @@ def create_app() -> FastAPI:
         title=settings.app_name,
         version=__version__,
         description="Personal NSE/BSE market analysis & decision-support tool.",
+        lifespan=lifespan,
     )
 
     app.add_middleware(
@@ -29,9 +48,8 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    app.include_router(health.router, prefix="/api")
-    app.include_router(market.router, prefix="/api")
-    app.include_router(analysis.router, prefix="/api")
+    for module in (health, market, analysis, watchlist, portfolio, admin):
+        app.include_router(module.router, prefix="/api")
 
     @app.get("/")
     def root() -> dict:

@@ -1,5 +1,6 @@
-# Local data stores
-data/
+# Local data stores (only the runtime data dirs, NOT the app/data source package)
+/data/
+/backend/data/
 *.duckdb
 *.parquet
 *.sqlite

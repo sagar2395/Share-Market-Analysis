@@ -1,69 +1,60 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "./api";
-import { PriceChart } from "./components/PriceChart";
-import { ExplanationPanel } from "./components/ExplanationPanel";
+import { Watchlist } from "./components/Watchlist";
+import { Dashboard } from "./pages/Dashboard";
+import { Analyze } from "./pages/Analyze";
+import { Portfolio } from "./pages/Portfolio";
 
-const DEFAULT_SYMBOLS = [
-  "RELIANCE.NS",
-  "TCS.NS",
-  "HDFCBANK.NS",
-  "INFY.NS",
-  "ICICIBANK.NS",
-  "SBIN.NS",
-  "TATAMOTORS.NS",
-];
+type Tab = "dashboard" | "analyze" | "portfolio";
 
 export default function App() {
+  const [tab, setTab] = useState<Tab>("dashboard");
   const [symbol, setSymbol] = useState("RELIANCE.NS");
+  const [interval, setInterval] = useState("1d");
 
   const health = useQuery({ queryKey: ["health"], queryFn: api.health });
-  const candles = useQuery({ queryKey: ["ohlcv", symbol], queryFn: () => api.ohlcv(symbol) });
-  const indicators = useQuery({
-    queryKey: ["indicators", symbol],
-    queryFn: () => api.indicators(symbol),
-  });
+
+  const select = (s: string) => {
+    setSymbol(s);
+    setTab("analyze");
+  };
 
   return (
-    <div className="app">
-      <header>
-        <h1>Share-Market-Analysis</h1>
-        <div className="muted">
-          Personal NSE/BSE analysis &amp; decision support
-          {health.data && ` · data: ${health.data.provider} · v${health.data.version}`}
+    <div className="shell">
+      <header className="topbar">
+        <div>
+          <h1>Share-Market-Analysis</h1>
+          <div className="muted">
+            NSE/BSE swing &amp; positional analysis
+            {health.data && ` · data: ${health.data.provider} · v${health.data.version}`}
+          </div>
         </div>
+        <nav className="tabs">
+          {(["dashboard", "analyze", "portfolio"] as Tab[]).map((t) => (
+            <button
+              key={t}
+              className={t === tab ? "tab active" : "tab"}
+              onClick={() => setTab(t)}
+            >
+              {t[0].toUpperCase() + t.slice(1)}
+            </button>
+          ))}
+        </nav>
       </header>
 
-      <div className="toolbar">
-        <label htmlFor="sym">Symbol</label>
-        <select id="sym" value={symbol} onChange={(e) => setSymbol(e.target.value)}>
-          {DEFAULT_SYMBOLS.map((s) => (
-            <option key={s} value={s}>
-              {s}
-            </option>
-          ))}
-        </select>
+      <div className="body">
+        <Watchlist selected={symbol} onSelect={select} />
+        <main className="content">
+          {tab === "dashboard" && <Dashboard onSelect={select} />}
+          {tab === "analyze" && (
+            <Analyze symbol={symbol} interval={interval} onInterval={setInterval} />
+          )}
+          {tab === "portfolio" && <Portfolio onSelect={select} />}
+        </main>
       </div>
 
-      <div className="grid">
-        <section className="card">
-          <h2>{symbol}</h2>
-          {candles.isLoading && <p className="muted">Loading chart…</p>}
-          {candles.isError && <p className="err">Failed to load price data.</p>}
-          {candles.data && <PriceChart candles={candles.data} />}
-        </section>
-
-        <section>
-          <h2>What am I looking at?</h2>
-          {indicators.isLoading && <p className="muted">Reading the indicators…</p>}
-          {indicators.isError && <p className="err">Failed to load analysis.</p>}
-          {indicators.data && <ExplanationPanel items={indicators.data} />}
-        </section>
-      </div>
-
-      <footer className="muted">
-        Not financial advice. Signals are aids — you decide.
-      </footer>
+      <footer className="muted">Not financial advice. Signals are aids — you decide.</footer>
     </div>
   );
 }

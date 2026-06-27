@@ -4,63 +4,73 @@
 > session; update it at the end of every working run. See `CLAUDE.md` §2–3.
 
 **Last updated:** 2026-06-27
-**Current phase:** Phase 0 — Foundation (scaffolding) → first vertical slice
+**Current phase:** Phase 1 (MVP) — **core delivered**; polishing into Phase 2.
 
 ---
 
 ## Snapshot
-A working backend vertical slice exists: fetch OHLCV (offline `SampleProvider`,
-auto-falls back from `yfinance` when no network) → serve via FastAPI → compute
-indicators (EMA, RSI, MACD) each with a plain-language `explain()` → expose over
-REST. Frontend Vite/React scaffold renders a candlestick chart + indicator
-explanations against the API. Docs, state tracking, and recommendations log set up.
+Trading horizon is **swing/positional (2 weeks–6 months), no intraday** — analysis runs
+on **daily + weekly** timeframes. The app now has: a persistent **watchlist**, a manual
+**portfolio with live P&L**, a **dashboard**, an **Analyze** screen (candles + volume +
+EMA/Bollinger overlays + the "what am I looking at?" teaching panel + daily/weekly
+toggle), **EOD ingestion** into a DuckDB history store (daily job + manual trigger), and
+four indicators (EMA, RSI, MACD, Bollinger) each with a plain-language `explain()`.
+Backend has 13 passing tests; frontend builds clean.
 
 ---
 
 ## Done ✅
-- [x] `PLAN.md` — full design & roadmap (phase order FROZEN).
-- [x] `CLAUDE.md` — standing agent instructions (state mgmt, docs, recommendations).
-- [x] Docs skeleton: `architecture.md`, `development.md`, `guides/`, this file,
-      `RECOMMENDATIONS.md`.
-- [x] **Backend scaffold** (`backend/app/`): config, logging, FastAPI app, CORS.
-- [x] **Data layer:** `MarketDataProvider` ABC; `SampleProvider` (offline synthetic
-      NSE data); `YFinanceProvider` (live, used when network available); provider
-      registry with automatic fallback.
-- [x] Pydantic models: `SymbolInfo`, `OHLCVBar`, `Candles`, `Quote`.
-- [x] **Intelligence engine v0:** `Indicator` base with `compute()` + `explain()`;
-      EMA, RSI, MACD implemented with live-value teaching text; indicator registry.
-- [x] **API:** `/api/health`, `/api/market/search`, `/api/market/ohlcv`,
-      `/api/market/quote`, `/api/analysis/indicators`.
-- [x] **Tests** (`backend/tests/`): health, providers, indicators — passing.
-- [x] **Frontend scaffold** (`frontend/`): Vite + React + TS, lightweight-charts
-      candlestick view, indicator explanation panel, API client.
-- [x] User guides: getting-started + dashboard/chart guide.
+### Phase 0 (foundation)
+- [x] `PLAN.md`, `CLAUDE.md`, docs skeleton, recommendations log.
+- [x] Backend scaffold, provider abstraction, `SampleProvider` (offline) +
+      `YFinanceProvider` + registry with auto-fallback.
+- [x] Indicator engine v0 (EMA/RSI/MACD) with `explain()`; REST API; tests.
+- [x] Frontend scaffold: candlestick chart + explanation panel.
+
+### Phase 1 (MVP)
+- [x] **Trading horizon corrected** to swing/positional (2wk–6mo); docs updated; intraday
+      removed; daily+weekly timeframes only.
+- [x] **Storage:** SQLite (SQLAlchemy) for state; **DuckDB** history store (`storage/`).
+- [x] **Watchlist:** persistent add/remove/list + live quotes (`services/watchlist.py`,
+      `/api/watchlist*`) + sidebar UI.
+- [x] **Portfolio (manual):** holdings with weighted-average-in, target/stop/horizon,
+      **live P&L + totals** (`services/portfolio.py`, `/api/portfolio*`) + UI page.
+- [x] **Weekly timeframe:** providers serve `1wk` (sample resamples; yfinance native).
+- [x] **Bollinger Bands** indicator with squeeze detection + `explain()`.
+- [x] **Chart overlays:** EMA(20/50) lines, Bollinger bands, volume histogram;
+      `/api/analysis/overlays`. Daily/Weekly toggle in UI.
+- [x] **EOD ingestion → DuckDB** (`services/ingestion.py`) + APScheduler daily job
+      (18:30 IST) + manual `/api/admin/ingest`.
+- [x] **Dashboard:** portfolio totals + watchlist movers.
+- [x] Tests for all of the above (13 total, passing). User guides for watchlist &
+      portfolio added.
 
 ## In progress 🚧
-- [ ] (none — Phase 0 slice complete)
+- [ ] (none — Phase 1 core complete)
 
-## Next up ▶️ (Phase 1 — MVP: see your market)
-1. Symbol search UI wired to `/api/market/search` + watchlist (SQLite-backed).
-2. Multi-timeframe candlestick chart with indicator overlays (EMA/RSI/MACD/Bollinger/volume).
-3. "What am I looking at?" explainer UI surfacing `explain()` on every chart/indicator.
-4. Portfolio (manual entry): holdings, avg cost, live P&L — SQLite models + UI.
-5. EOD ingestion job (APScheduler) → DuckDB/Parquet history store.
-6. Dashboard: indices, watchlist, top movers.
+## Next up ▶️ (remaining Phase 1 polish → Phase 2)
+1. **Symbol search UX:** wire `/api/market/search` to an autocomplete (currently the
+   watchlist accepts a typed symbol; universe is the curated NSE list — expand it).
+2. **More indicators on the teaching panel:** ADX/Supertrend/ATR (swing-friendly).
+3. **Phase 2 — Screener & signals:** filter the universe by technical/fundamental
+   criteria; signal tags on the watchlist; alerts. (See `PLAN.md` §7, order FROZEN.)
 
 ## Decisions & gotchas 📌
-- **Network in sandbox:** market-data hosts (Yahoo) are blocked by the remote env's
-  policy; PyPI/npm are allowed. The app is built **offline-first** via `SampleProvider`
-  so it runs/tests anywhere. Locally (full internet) `YFinanceProvider` is used.
-- **Indicators hand-implemented** in Phase 0 (EMA/RSI/MACD) to keep deps light and
-  guarantee `explain()` integration; can adopt `pandas-ta` later for breadth.
-- **Storage:** DuckDB/SQLite wiring is stubbed at Phase 0 (providers serve directly);
-  persistence lands in Phase 1 with the ingestion job.
-- Default provider chosen by `SMA_PROVIDER` env (`sample` | `yfinance`), default
-  `yfinance` with automatic fallback to `sample` on failure.
+- **Horizon:** owner does NOT day-trade; "short-term" = 2wk–6mo. No intraday/minute data
+  or tick streaming anywhere in the design.
+- **Network in sandbox:** market-data hosts blocked; built **offline-first** via
+  `SampleProvider`. Locally, `yfinance` serves real NSE/BSE data automatically.
+- **Two stores:** `data/app.sqlite` (state) + `data/history.duckdb` (OHLCV history),
+  both under `SMA_DATA_DIR` (gitignored).
+- **Scheduler:** disabled in tests via `SMA_ENABLE_SCHEDULER=false`. Uses Asia/Kolkata;
+  wrapped in try/except so the app serves even if it can't start.
+- **Provider quote for P&L:** uses last close from the active provider; fine for EOD/
+  swing use. Intraday live price not needed.
 
 ## How to run (quick)
-- Backend: `cd backend && pip install -e . && uvicorn app.main:app --reload` → http://127.0.0.1:8000/docs
+- Backend: `cd backend && pip install -e ".[dev]" && uvicorn app.main:app --reload` → http://127.0.0.1:8000/docs
 - Frontend: `cd frontend && npm install && npm run dev` → http://127.0.0.1:5173
 - Tests: `cd backend && pytest`
+- Manual data pull: `POST /api/admin/ingest` (or wait for the 18:30 IST job).
 
 See `docs/development.md` for details.

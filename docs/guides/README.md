@@ -7,14 +7,16 @@ decision it helps you make. If you're ever stuck in the app, start here.
 > New guides are added as features ship (see `CLAUDE.md` §4). The list below grows
 > with the roadmap in `PLAN.md` §7.
 
-## Available now (Phase 0)
+## Available now
 - [Getting Started](getting-started.md) — install, run, and open the app.
 - [Price Chart & "What am I looking at?"](chart-and-explanations.md) — read the
-  candlestick chart and the plain-language indicator explanations.
-
-## Coming with Phase 1 (planned)
-- Watchlists · Symbol search · Manual portfolio · Dashboard
+  candlestick chart, overlays (EMA/Bollinger/volume), daily↔weekly toggle, and the
+  plain-language indicator explanations.
+- [Watchlist](watchlist.md) — track symbols, see live quotes, jump to analysis.
+- [Portfolio](portfolio.md) — manual holdings with live P&L, targets/stops, horizon.
+- [Dashboard](dashboard.md) — portfolio totals + watchlist movers at a glance.
 
 ## Coming later
-- Screener · Alerts · Correlation & FII/DII engine · Recommendations · Backtesting ·
-  Trade journal · Broker sync (see `PLAN.md` §7 for the full roadmap)
+- Symbol search (full universe) · Screener · Alerts · Correlation & FII/DII engine ·
+  Recommendations · Backtesting · Trade journal · Broker sync
+  (see `PLAN.md` §7 for the full roadmap, order frozen)
