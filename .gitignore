@@ -7,16 +7,27 @@ data/
 # Env / secrets
 .env
 .env.*
+!.env.example
 
 # Python
 __pycache__/
 *.pyc
 .venv/
 venv/
+*.egg-info/
+.pytest_cache/
 
 # Node
 node_modules/
 dist/
+.vite/
+
+# Build/IDE
+.idea/
+.vscode/
 
 # OS
 .DS_Store
+
+# TS build info
+*.tsbuildinfo
