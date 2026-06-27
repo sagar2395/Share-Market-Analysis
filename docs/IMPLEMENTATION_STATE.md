@@ -4,18 +4,20 @@
 > session; update it at the end of every working run. See `CLAUDE.md` §2–3.
 
 **Last updated:** 2026-06-27
-**Current phase:** Phase 1 (MVP) — **core delivered**; polishing into Phase 2.
+**Current phase:** Phase 2 (Screener & signals) — **core delivered** (signals, confluence,
+screener, paper trading); remaining: alerts + pattern recognition.
 
 ---
 
 ## Snapshot
 Trading horizon is **swing/positional (2 weeks–6 months), no intraday** — analysis runs
-on **daily + weekly** timeframes. The app now has: a persistent **watchlist**, a manual
+on **daily + weekly** timeframes. The app has: a persistent **watchlist**, a manual
 **portfolio with live P&L**, a **dashboard**, an **Analyze** screen (candles + volume +
-EMA/Bollinger overlays + the "what am I looking at?" teaching panel + daily/weekly
-toggle), **EOD ingestion** into a DuckDB history store (daily job + manual trigger), and
-four indicators (EMA, RSI, MACD, Bollinger) each with a plain-language `explain()`.
-Backend has 13 passing tests; frontend builds clean.
+EMA/Bollinger overlays + "what am I looking at?" teaching + daily/weekly toggle +
+**weekly/daily confluence badge**), a **Screener** (preset scans ranked by setup score),
+a **Paper-trading** sandbox (buy/sell at live price, positions, realised/unrealised P&L,
+reset), **EOD ingestion** into DuckDB, four indicators with `explain()`, and a
+**confluence signal engine**. Backend has 18 passing tests; frontend builds clean.
 
 ---
 
@@ -45,15 +47,32 @@ Backend has 13 passing tests; frontend builds clean.
 - [x] Tests for all of the above (13 total, passing). User guides for watchlist &
       portfolio added.
 
-## In progress 🚧
-- [ ] (none — Phase 1 core complete)
+### Phase 2 (Screener & signals) — core
+- [x] **Confluence signal engine** (`intelligence/signals/`): weekly+daily verdict with
+      badge, action (buy/watch/hold/avoid), 0–100 score, reasons, summary. Long-only
+      bias (bearish = "avoid"/stand aside). `/api/signal`.
+- [x] **Confluence badge** on the Analyze screen (the owner-approved feature).
+- [x] **Screener** (`services/screener.py`, `/api/screener`): presets (trend-aligned,
+      buy-the-dip, oversold/basing, actionable, all) ranked by score + min-score filter;
+      Screener UI page.
+- [x] **Paper-trading sandbox** (`services/paper.py`, `/api/paper*`): simulated cash
+      account, buy/sell at live price, avg-cost positions, realised + unrealised P&L,
+      equity & return, trade log, reset; Paper UI page.
+- [x] Tests for signals/screener/paper (18 total, passing).
 
-## Next up ▶️ (remaining Phase 1 polish → Phase 2)
-1. **Symbol search UX:** wire `/api/market/search` to an autocomplete (currently the
-   watchlist accepts a typed symbol; universe is the curated NSE list — expand it).
-2. **More indicators on the teaching panel:** ADX/Supertrend/ATR (swing-friendly).
-3. **Phase 2 — Screener & signals:** filter the universe by technical/fundamental
-   criteria; signal tags on the watchlist; alerts. (See `PLAN.md` §7, order FROZEN.)
+## In progress 🚧
+- [ ] (none — Phase 2 core complete)
+
+## Next up ▶️ (remaining Phase 2 → Phase 3)
+1. **Alerts** (price/indicator/confluence-change thresholds) with browser notifications.
+2. **Pattern recognition** (candles + support/resistance) feeding the signal reasons.
+3. **Watchlist signal tags:** show each watchlist row's confluence badge inline.
+4. **Phase 3 — Fundamentals & correlation engine** (FII/DII, sector rotation, macro
+   exposure). See `PLAN.md` §7 (order FROZEN).
+
+### Backlog (nice-to-have, not blocking)
+- Symbol-search autocomplete + fuller NSE universe (currently curated large-caps).
+- More indicators (ADX/Supertrend/ATR) on the teaching panel.
 
 ## Decisions & gotchas 📌
 - **Horizon:** owner does NOT day-trade; "short-term" = 2wk–6mo. No intraday/minute data

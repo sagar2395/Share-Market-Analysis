@@ -28,16 +28,20 @@ Frontend (React/TS)  ──REST/WS──>  API (FastAPI)
 | `intelligence/indicators/base.py` | `Indicator` ABC: `compute()` + `explain()` (teaching). |
 | `intelligence/indicators/*` | EMA, RSI, MACD, Bollinger (each self-registers). |
 | `intelligence/registry.py` | Indicator registry (plugin discovery). |
-| `storage/db.py` · `storage/models.py` | SQLite/SQLAlchemy state: watchlist, holdings. |
+| `intelligence/signals/confluence.py` | Weekly+daily confluence engine → `Signal`. |
+| `storage/db.py` · `storage/models.py` | SQLite/SQLAlchemy state: watchlist, holdings, paper. |
 | `storage/history.py` | DuckDB OHLCV history (upsert/load/stats). |
 | `services/watchlist.py` · `services/portfolio.py` | Business logic for watchlist & P&L. |
+| `services/screener.py` | Universe scan + presets, built on the signal engine. |
+| `services/paper.py` | Paper-trading account, orders, positions, P&L. |
 | `services/ingestion.py` | EOD pull of tracked symbols → DuckDB. |
 | `core/scheduler.py` | APScheduler daily ingestion job (18:30 IST). |
-| `api/routes/*` | Routers: health, market, analysis, watchlist, portfolio, admin. |
+| `api/routes/*` | Routers: health, market, analysis, signals, watchlist, portfolio, paper, admin. |
 | `main.py` | App factory, CORS, lifespan (DB init + scheduler), router wiring. |
 
 ## Storage split
-- **`data/app.sqlite`** (SQLAlchemy) — small mutable state: watchlist, holdings.
+- **`data/app.sqlite`** (SQLAlchemy) — small mutable state: watchlist, holdings, and the
+  paper-trading account/positions/trades.
 - **`data/history.duckdb`** — append-only OHLCV (daily + weekly), keyed
   `(symbol, interval, time)`; fast for the correlation/backtesting phases.
 - Both live under `SMA_DATA_DIR` (gitignored).

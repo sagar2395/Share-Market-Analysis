@@ -84,12 +84,84 @@ export interface NewHolding {
   notes?: string;
 }
 
+export type Trend = "up" | "down" | "flat";
+export interface Signal {
+  symbol: string;
+  badge: string;
+  action: "buy" | "watch" | "hold" | "avoid";
+  stance: Stance;
+  score: number;
+  horizon: string;
+  weekly_trend: Trend;
+  daily_trend: Trend;
+  price: number;
+  reasons: string[];
+  summary: string;
+  caveat: string | null;
+}
+
+export interface ScreenerPreset {
+  key: string;
+  label: string;
+  desc: string;
+}
+export interface ScreenerRow {
+  symbol: string;
+  name: string;
+  badge: string;
+  action: Signal["action"];
+  stance: Stance;
+  score: number;
+  weekly_trend: Trend;
+  daily_trend: Trend;
+  price: number;
+  summary: string;
+}
+
+export interface PaperPosition {
+  symbol: string;
+  name: string;
+  quantity: number;
+  avg_cost: number;
+  current_price: number | null;
+  market_value: number | null;
+  unrealized_pnl: number | null;
+}
+export interface PaperSummary {
+  starting_cash: number;
+  cash: number;
+  holdings_value: number;
+  equity: number;
+  realized_pnl: number;
+  total_return_pct: number;
+  positions: PaperPosition[];
+}
+export interface PaperTrade {
+  id: number;
+  symbol: string;
+  side: "BUY" | "SELL";
+  quantity: number;
+  price: number;
+  realized_pnl: number;
+  traded_at: string;
+}
+
 async function req<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${BASE}${path}`, {
     headers: { "Content-Type": "application/json" },
     ...init,
   });
-  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+  if (!res.ok) {
+    // Surface FastAPI's {detail: "..."} message when present.
+    let detail = `${res.status} ${res.statusText}`;
+    try {
+      const body = await res.json();
+      if (body?.detail) detail = body.detail;
+    } catch {
+      /* ignore non-JSON bodies */
+    }
+    throw new Error(detail);
+  }
   return res.json() as Promise<T>;
 }
 
@@ -121,4 +193,24 @@ export const api = {
   portfolioAdd: (h: NewHolding) =>
     req("/api/portfolio", { method: "POST", body: JSON.stringify(h) }),
   portfolioRemove: (id: number) => req(`/api/portfolio/${id}`, { method: "DELETE" }),
+
+  // Signals & screener
+  signal: (symbol: string) => req<Signal>(`/api/signal?symbol=${encodeURIComponent(symbol)}`),
+  screenerPresets: () => req<ScreenerPreset[]>("/api/screener/presets"),
+  screener: (preset: string, minScore = 0) =>
+    req<ScreenerRow[]>(`/api/screener?preset=${preset}&min_score=${minScore}`),
+
+  // Paper trading
+  paper: () => req<PaperSummary>("/api/paper"),
+  paperTrades: () => req<PaperTrade[]>("/api/paper/trades"),
+  paperOrder: (symbol: string, side: "BUY" | "SELL", quantity: number) =>
+    req<{ executed: unknown; summary: PaperSummary }>("/api/paper/order", {
+      method: "POST",
+      body: JSON.stringify({ symbol, side, quantity }),
+    }),
+  paperReset: (starting_cash: number) =>
+    req<PaperSummary>("/api/paper/reset", {
+      method: "POST",
+      body: JSON.stringify({ starting_cash }),
+    }),
 };

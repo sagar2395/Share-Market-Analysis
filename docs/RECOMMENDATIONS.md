@@ -69,9 +69,47 @@ next (without touching the frozen phase order — these slot *into* their phases
    One plain-language paragraph: concentration, sector tilt, biggest risk, what the trend
    says about your holdings — the teaching layer applied to *your* book. *Effort: M.*
 
-6. 🆕 **Weekly+Daly confluence badge** (Phase 2)
+6. ✅ **Weekly+Daily confluence badge** (Phase 2) — **APPROVED 2026-06-27, building now.**
    Since you'll check weekly-then-daily, compute whether both timeframes agree (e.g.
    "Weekly up + Daily pullback = buy-the-dip zone") and show it as a single badge.
    *Effort: S, high value for your style.*
+
+**Also approved 2026-06-27 (building now):** **Paper-trading sandbox** (from `PLAN.md` §8 /
+Phase 5, pulled forward to Phase 2) — simulated cash account to practise the engine's
+calls risk-free.
+
+---
+
+## 2026-06-27 — after Phase 2 core (signals, confluence, screener, paper trading)
+
+Both approved features shipped (✔️ confluence badge, ✔️ paper trading), plus the screener.
+Highest-value next steps (all within the frozen phase order):
+
+1. 🆕 **Send paper trades straight from a signal** (Phase 2)
+   A "Paper-buy this setup" button on the Analyze badge / screener row that pre-fills the
+   order with a risk-based quantity (using a default % risk + the suggested stop). Closes
+   the loop scan → study → practise. *Effort: S.*
+
+2. 🆕 **Auto-suggested stop & target on each signal** (Phase 2)
+   Extend the confluence `Signal` with a concrete stop (recent swing low / ATR) and 1–2
+   targets, so the badge gives a full plan, not just a direction. Feeds risk sizing.
+   *Effort: M.*
+
+3. 🆕 **Inline confluence tag on every watchlist row** (Phase 2, S)
+   Show each watchlist name's badge/score in the sidebar so the whole list is triaged at
+   a glance. *Effort: S.*
+
+4. 🆕 **Alerts on confluence change** (Phase 2)
+   Notify when a watchlist name flips into "Buy-the-dip zone" or "Trend aligned" (or out
+   of them). This is the natural Phase 2 alerts feature, tuned to your style. *Effort: M.*
+
+5. 🆕 **Backtest a preset** (Phase 4 preview)
+   "How would 'buy-the-dip, sell at target/stop' have done on this universe?" — even a
+   simple historical hit-rate would build trust in the scores. *Effort: M–L.*
+
+6. 🆕 **Paper-trading realism toggle** (Phase 2, S)
+   Optional brokerage + slippage so paper P&L isn't over-optimistic. *Effort: S.*
+
+_Owner: tick the ones you want and I'll fold them into the appropriate phase._
 
 _Owner: tick the ones you want and I'll fold them into the appropriate phase._

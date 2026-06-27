@@ -5,8 +5,11 @@ import { Watchlist } from "./components/Watchlist";
 import { Dashboard } from "./pages/Dashboard";
 import { Analyze } from "./pages/Analyze";
 import { Portfolio } from "./pages/Portfolio";
+import { Screener } from "./pages/Screener";
+import { Paper } from "./pages/Paper";
 
-type Tab = "dashboard" | "analyze" | "portfolio";
+type Tab = "dashboard" | "analyze" | "screener" | "portfolio" | "paper";
+const TABS: Tab[] = ["dashboard", "analyze", "screener", "portfolio", "paper"];
 
 export default function App() {
   const [tab, setTab] = useState<Tab>("dashboard");
@@ -31,7 +34,7 @@ export default function App() {
           </div>
         </div>
         <nav className="tabs">
-          {(["dashboard", "analyze", "portfolio"] as Tab[]).map((t) => (
+          {TABS.map((t) => (
             <button
               key={t}
               className={t === tab ? "tab active" : "tab"}
@@ -50,7 +53,9 @@ export default function App() {
           {tab === "analyze" && (
             <Analyze symbol={symbol} interval={interval} onInterval={setInterval} />
           )}
+          {tab === "screener" && <Screener onSelect={select} />}
           {tab === "portfolio" && <Portfolio onSelect={select} />}
+          {tab === "paper" && <Paper onSelect={select} />}
         </main>
       </div>
 

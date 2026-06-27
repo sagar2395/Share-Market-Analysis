@@ -12,8 +12,12 @@ and **teaches you** what every chart and correlation means and what to do about 
 > ⚠️ **Not financial advice.** Every output is a probabilistic aid. You decide.
 
 ## Status
-**Phase 0 complete** — foundation + a working vertical slice: fetch OHLCV → chart it →
-compute indicators (EMA/RSI/MACD) → explain each in plain language with an action.
+**Phase 2 core complete.** The app now has: watchlist, manual portfolio with live P&L,
+dashboard, an Analyze screen (candles + volume + EMA/Bollinger overlays + daily/weekly
+toggle + the **what-am-I-looking-at** teaching panel), a **weekly+daily confluence signal
+badge**, a **screener** (preset scans ranked by setup score), a **paper-trading sandbox**,
+EOD ingestion into DuckDB, and four explainable indicators. Trading horizon is
+**swing/positional (2 weeks–6 months), no intraday**.
 See [`docs/IMPLEMENTATION_STATE.md`](docs/IMPLEMENTATION_STATE.md) for live progress and
 [`PLAN.md`](PLAN.md) for the full design and roadmap.
 

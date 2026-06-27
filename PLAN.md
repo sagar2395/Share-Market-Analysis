@@ -231,10 +231,17 @@ Combines the above into an actionable, *explainable* call. **Never a black box**
 - Dashboard: indices, your watchlist, top movers.
 
 ### Phase 2 — Screener & signals
-- **Stock screener** (technical + fundamental filters; presets like "momentum breakout", "oversold quality").
-- Signal engine: indicator-based buy/sell/hold tags on watchlist.
-- Alerts (price/indicator thresholds) with desktop/browser notifications.
-- Pattern recognition (candles + S/R).
+- **Signal engine: weekly+daily confluence** *(owner-approved 2026-06-27)* — combine the
+  weekly trend with the daily setup into one explainable verdict + badge (e.g. "Weekly up
+  + Daily pullback = buy-the-dip zone"), with action, score, and reasons. Powers the
+  watchlist tags, the Analyze badge, and the screener.
+- **Stock screener** (technical filters + confluence presets like "trend-aligned longs",
+  "buy-the-dip", "oversold bounce"; fundamental filters arrive with Phase 3 data).
+- **Paper-trading sandbox** *(owner-approved 2026-06-27, pulled forward from Phase 5)* —
+  simulated cash account: place buy/sell at live price, track positions, realised +
+  unrealised P&L and equity, reset anytime. Practise the engine's calls risk-free.
+- Alerts (price/indicator thresholds) with desktop/browser notifications. *(Phase 2 polish)*
+- Pattern recognition (candles + S/R). *(Phase 2 polish)*
 
 ### Phase 3 — Fundamentals & the correlation engine
 - Fundamental data + per-stock scorecard + peer comparison.
@@ -252,7 +259,7 @@ Combines the above into an actionable, *explainable* call. **Never a black box**
 - Trade journal & analytics (your win rate, what setups work *for you*).
 - **Broker integration** (Zerodha Kite/Upstox): auto portfolio sync, optional order placement.
 - **Tauri desktop packaging** for macOS (M5).
-- Optional: paper-trading mode, export/reporting (PDF/Excel).
+- Optional: export/reporting (PDF/Excel). *(Paper-trading pulled forward to Phase 2.)*
 
 ---
 
@@ -264,7 +271,8 @@ Combines the above into an actionable, *explainable* call. **Never a black box**
 - **"Why did it move?" explainer** — for any move, auto-attribute it to sector/macro/flow/news factors.
 - **Pre-open prep brief** — daily auto-generated morning note: Gift Nifty, US close, FII/DII, your watchlist signals, events today.
 - **Event-aware mode** — flags upcoming results/ex-dates so you're not blindsided.
-- **Paper-trading sandbox** — test the engine's calls with fake money before risking real capital.
+- **Paper-trading sandbox** ✅ *approved 2026-06-27 — building in Phase 2* — test the engine's calls with fake money before risking real capital.
+- **Weekly+Daily confluence badge** ✅ *approved 2026-06-27 — building in Phase 2* — one badge telling you when both timeframes agree.
 - **Regime-adaptive signals** — suppress mean-reversion signals in strong trends and vice versa.
 
 ---

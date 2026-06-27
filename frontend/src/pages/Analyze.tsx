@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { api } from "../api";
 import { PriceChart } from "../components/PriceChart";
 import { ExplanationPanel } from "../components/ExplanationPanel";
+import { ConfluenceBadge } from "../components/ConfluenceBadge";
 
 const INTERVALS: { key: string; label: string }[] = [
   { key: "1d", label: "Daily" },
@@ -30,6 +31,8 @@ export function Analyze({
     queryKey: ["indicators", symbol, interval],
     queryFn: () => api.indicators(symbol, interval),
   });
+  // Confluence is timeframe-independent (it reads weekly AND daily itself).
+  const signal = useQuery({ queryKey: ["signal", symbol], queryFn: () => api.signal(symbol) });
 
   return (
     <div>
@@ -47,6 +50,13 @@ export function Analyze({
           ))}
         </div>
       </div>
+
+      {signal.data && (
+        <div style={{ marginBottom: 16 }}>
+          <h3 style={{ margin: "0 0 8px" }}>Weekly + Daily confluence</h3>
+          <ConfluenceBadge signal={signal.data} />
+        </div>
+      )}
 
       <div className="grid">
         <section className="card">
