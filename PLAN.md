@@ -113,10 +113,11 @@ Every analytical unit implements a tiny contract and self-registers, so "add a f
 class Indicator(Protocol):
     name: str
     def compute(self, df: pd.DataFrame, **params) -> pd.Series | pd.DataFrame: ...
+    def explain(self, ctx: AnalysisContext) -> Explanation: ...   # plain-language teaching, uses live values
 
 class SignalGenerator(Protocol):
     name: str
-    def generate(self, ctx: AnalysisContext) -> list[Signal]: ...
+    def generate(self, ctx: AnalysisContext) -> list[Signal]: ...   # each Signal carries its own "why" + action rationale
 
 class DataProvider(Protocol):
     def ohlcv(self, symbol, interval, start, end) -> pd.DataFrame: ...
@@ -183,7 +184,21 @@ This is what makes the tool more than "info a normal user has." It hunts for **r
 - Quality scores (Piotroski F-score, Altman Z), promoter holding & **pledging** trends, earnings surprises.
 - Quick health scorecard per stock.
 
-### 6d. Decision / recommendation engine
+### 6d. Learning & explainability layer (teach me as I use it)
+A cross-cutting feature, not a separate screen: **every chart, indicator, and correlation explains itself in plain language and tells you what to *do* with it.** You know the basics — this turns the tool into a tutor that levels you up while you trade.
+
+- **"What am I looking at?" on everything** — an info/expand control on every chart, indicator, heatmap, and signal that explains, in 2–3 plain sentences: *what it measures → what the current reading means → what it typically implies for a buy/sell/hold*. Example for RSI: *"Measures momentum 0–100. Right now it's 78 = overbought, meaning the stock has run up fast and may be due for a pullback. Short-term traders often avoid fresh buys here or book partial profits; wait for a dip toward 40–50 for a better entry."*
+- **Plain-language reading of each correlation** — e.g. *"RELIANCE and the energy sector are 0.85 correlated this month, but that just dropped from 0.95. A breaking correlation often means something stock-specific is happening — worth checking news before trading on the sector view."* Or for FII/DII: *"FIIs sold ₹3,000 cr today while the index held up — domestic buying is absorbing foreign selling. Historically this is a sign of underlying strength, but watch if FII selling persists for several days."*
+- **Live interpretation, not static glossary** — explanations use the *current* numbers for *this* stock, so the lesson is always concrete and contextual, not a textbook definition.
+- **"Why this signal" breakdown** — every Buy/Sell/Hold expands into the exact factors that produced it, each with a one-line rationale, so you learn the reasoning pattern over time.
+- **Chart-reading guidance** — pattern annotations are labeled and explained ("this is a bullish flag — a brief pause in an uptrend that often resolves upward; traders watch for a breakout above the upper line"), with the suggested action and where the idea fails (invalidation level).
+- **Glossary + concept cards** — a searchable, linked glossary (RSI, PCR, delivery %, beta, max-pain, etc.); any term in the UI is clickable to its card. Optional "explain like I'm learning" toggle for more detail.
+- **Progressive depth** — concise by default, with an "explain more" expansion that goes deeper (the math/history) when you want it, so it never clutters but is always available.
+- **Confidence & caveats stated honestly** — explanations include when a signal is unreliable (e.g. "low volume makes this breakout less trustworthy"), training good judgment rather than blind following.
+
+> Implementation note: explanations are generated from a **rule/template engine over live values** (deterministic, fast, free) for everyday readings, with an optional LLM layer later for free-form "explain this chart to me" Q&A. Each indicator/correlation module ships its own `explain(context) -> str` method, so the teaching content grows automatically as features are added.
+
+### 6e. Decision / recommendation engine
 Combines the above into an actionable, *explainable* call. **Never a black box** — every suggestion shows its reasons.
 
 - **Composite scoring:** weighted blend of technical, fundamental, flow, sentiment, and correlation signals → score per stock.
@@ -204,6 +219,7 @@ Combines the above into an actionable, *explainable* call. **Never a black box**
 ### Phase 1 — MVP: see your market
 - Symbol search (NSE/BSE universe), watchlists.
 - Interactive candlestick charts (multi-timeframe) with core indicators (EMA, RSI, MACD, Bollinger, volume).
+- **Learning layer (from day one):** "what am I looking at?" explainers on every chart/indicator + clickable glossary — so the teaching grows with each feature instead of being bolted on at the end.
 - **Portfolio (manual entry):** holdings, avg cost, live P&L, allocation.
 - EOD ingestion job + local history store.
 - Dashboard: indices, your watchlist, top movers.
@@ -236,6 +252,7 @@ Combines the above into an actionable, *explainable* call. **Never a black box**
 
 ## 8. Value-add features I'm proposing (beyond your ask)
 
+- **Built-in tutor (learning & explainability layer)** — every chart, indicator, and correlation explains what it means *and what to do about it* using live values for the stock you're viewing, plus a clickable glossary and progressive "explain more" depth. Turns the tool into something that levels up your market understanding as you use it. *(Detailed in §6e.)*
 - **Trade journal with self-analytics** — the tool learns *which setups make money for you specifically*, not just generic signals. Huge for a short-term trader.
 - **Risk-first position sizing** — every idea sized to a fixed % portfolio risk via stop distance (protects quick-win capital).
 - **"Why did it move?" explainer** — for any move, auto-attribute it to sector/macro/flow/news factors.
